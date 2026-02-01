@@ -1,52 +1,22 @@
-import React, { useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import React from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import {
   Home,
   Users,
-  MessageCircle,
-  School,
   Bell,
-  User,
-  LogOut,
-  Menu,
-  X,
   CheckCircle,
   AlertCircle,
   Shield
 } from 'lucide-react'
+import StatCard from '../components/StatCard'
+import TrustScore from '../components/TrustScore'
 
 export default function Dashboard() {
-  const { user, profile, signOut } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-
-  const handleSignOut = async () => {
-    await signOut()
-    navigate('/login')
-  }
-
-  const navItems = [
-    { path: '/dashboard', icon: Home, label: 'Dashboard' },
-    { path: '/feed', icon: Home, label: 'Feed', requireVerified: true },
-    { path: '/connections', icon: Users, label: 'Connections', requireVerified: true },
-    { path: '/chat', icon: MessageCircle, label: 'Chat', requireVerified: true },
-    { path: '/classrooms', icon: School, label: 'Classrooms', requireVerified: true },
-    { path: '/bulletins', icon: Bell, label: 'Bulletins' },
-    { path: '/profile', icon: User, label: 'Profile' },
-  ]
-
-  // Add admin verification link for admins
-  if (profile?.role === 'admin') {
-    navItems.push({ path: '/admin/verification', icon: Shield, label: 'Verify Users' })
-  }
-
-  const isActive = (path) => location.pathname === path
+  const { user, profile } = useAuth()
 
   const getVerificationBadge = () => {
     if (!profile) return null
-    
     if (profile.verification_status === 'verified') {
       return (
         <span className="badge badge-success">
@@ -72,41 +42,49 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--gray-50)' }}>
-      {/* Sidebar */}
-      <aside style={{
-        width: '260px',
-        backgroundColor: 'white',
-        borderRight: '1px solid var(--gray-200)',
-        position: 'fixed',
-        height: '100vh',
-        overflowY: 'auto',
-        transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-        transition: 'transform 0.3s ease',
-        zIndex: 50
-      }}
-      className="sidebar">
-        <div style={{ padding: 'var(--spacing-xl)' }}>
-          <h1 style={{
-            fontSize: '1.5rem',
-            fontWeight: '700',
-            color: 'var(--primary-blue)',
-            marginBottom: 'var(--spacing-lg)'
+    <>
+        {/* Header Section */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          marginBottom: 'var(--spacing-xl)',
+          flexWrap: 'wrap',
+          gap: '1rem'
+        }}>
+          <div>
+            <h2 className="gradient-text" style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '0.25rem' }}>
+              Dashboard
+            </h2>
+            <p style={{ color: 'var(--gray-500)', fontSize: '1rem' }}>
+              Welcome back, {profile?.role === 'student' ? 'Future Leader' : 'Professor'} {user?.email?.split('@')[0]}
+            </p>
+          </div>
+          
+          <div className="glass-card" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '1rem', 
+            padding: '0.5rem 1rem',
+            borderRadius: '9999px'
           }}>
-            YuvaSetu
-          </h1>
-
-          {/* User Profile Card */}
-          <div style={{
-            padding: 'var(--spacing-md)',
-            backgroundColor: 'var(--gray-50)',
-            borderRadius: 'var(--radius-md)',
-            marginBottom: 'var(--spacing-lg)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-sm)' }}>
+            <div style={{ position: 'relative' }}>
+              <Bell size={20} color="var(--gray-500)" />
+              <span style={{ 
+                position: 'absolute', 
+                top: -2, 
+                right: -2, 
+                width: '8px', 
+                height: '8px', 
+                backgroundColor: 'var(--error-red)', 
+                borderRadius: '50%' 
+              }} />
+            </div>
+            <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--gray-200)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <div style={{
-                width: '40px',
-                height: '40px',
+                width: '32px',
+                height: '32px',
                 borderRadius: '50%',
                 backgroundColor: 'var(--primary-blue)',
                 display: 'flex',
@@ -114,224 +92,144 @@ export default function Dashboard() {
                 justifyContent: 'center',
                 color: 'white',
                 fontWeight: '600',
-                fontSize: '1.125rem'
+                fontSize: '0.875rem'
               }}>
                 {user?.email?.[0]?.toUpperCase()}
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontWeight: '600', fontSize: '0.875rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {user?.email?.split('@')[0]}
-                </p>
-                <span className="badge badge-primary" style={{ fontSize: '0.6875rem', padding: '0.125rem 0.375rem' }}>
-                  {profile?.role?.charAt(0).toUpperCase() + profile?.role?.slice(1)}
-                </span>
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--spacing-sm)' }}>
-              {getVerificationBadge()}
-              <span style={{ fontSize: '0.75rem', color: 'var(--gray-600)' }}>
-                Score: {profile?.trust_score || 100}
-              </span>
             </div>
           </div>
-
-          {/* Navigation */}
-          <nav>
-            {navItems.map((item) => {
-              const Icon = item.icon
-              const disabled = item.requireVerified && profile?.verification_status !== 'verified'
-              
-              return (
-                <Link
-                  key={item.path}
-                  to={disabled ? '#' : item.path}
-                  onClick={(e) => {
-                    if (disabled) e.preventDefault()
-                    setSidebarOpen(false)
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--spacing-sm)',
-                    padding: 'var(--spacing-sm) var(--spacing-md)',
-                    borderRadius: 'var(--radius-md)',
-                    marginBottom: 'var(--spacing-xs)',
-                    textDecoration: 'none',
-                    color: isActive(item.path) ? 'white' : 'var(--gray-700)',
-                    backgroundColor: isActive(item.path) ? 'var(--primary-blue)' : 'transparent',
-                    fontWeight: isActive(item.path) ? '500' : '400',
-                    fontSize: '0.9375rem',
-                    opacity: disabled ? 0.5 : 1,
-                    cursor: disabled ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <Icon size={20} />
-                  {item.label}
-                </Link>
-              )
-            })}
-
-            <button
-              onClick={handleSignOut}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--spacing-sm)',
-                padding: 'var(--spacing-sm) var(--spacing-md)',
-                borderRadius: 'var(--radius-md)',
-                marginTop: 'var(--spacing-md)',
-                border: 'none',
-                backgroundColor: 'transparent',
-                color: 'var(--error-red)',
-                fontWeight: '500',
-                fontSize: '0.9375rem',
-                cursor: 'pointer',
-                width: '100%',
-                transition: 'background-color 0.2s ease'
-              }}
-              onMouseOver={(e) => e.target.style.backgroundColor = 'var(--gray-100)'}
-              onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
-            >
-              <LogOut size={20} />
-              Sign Out
-            </button>
-          </nav>
         </div>
-      </aside>
 
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        style={{
-          position: 'fixed',
-          top: 'var(--spacing-md)',
-          left: 'var(--spacing-md)',
-          zIndex: 60,
-          backgroundColor: 'var(--primary-blue)',
-          color: 'white',
-          border: 'none',
-          borderRadius: 'var(--radius-md)',
-          padding: 'var(--spacing-sm)',
-          cursor: 'pointer',
-          display: 'none'
-        }}
-        className="mobile-menu-btn"
-      >
-        {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
-
-      {/* Main Content */}
-      <main style={{
-        marginLeft: '260px',
-        flex: 1,
-        padding: 'var(--spacing-xl)',
-        width: 'calc(100% - 260px)'
-      }}
-      className="main-content">
-        <h2 style={{ fontSize: '1.875rem', fontWeight: '700', marginBottom: 'var(--spacing-lg)', color: 'var(--gray-900)' }}>
-          Welcome back! 👋
-        </h2>
-
+        {/* Verification Alert */}
         {profile?.verification_status === 'pending' && (
-          <div style={{
+          <div className="glass-card" style={{
             padding: 'var(--spacing-lg)',
-            backgroundColor: '#fff3cd',
+            backgroundColor: '#fff3cd', // Override glass background
             border: '1px solid #ffc107',
-            borderRadius: 'var(--radius-md)',
-            marginBottom: 'var(--spacing-lg)'
+            marginBottom: 'var(--spacing-xl)',
+            display: 'flex',
+            gap: '1rem',
+            alignItems: 'flex-start'
           }}>
-            <h3 style={{ fontWeight: '600', marginBottom: 'var(--spacing-sm)', color: '#856404' }}>
-              <AlertCircle size={20} style={{ display: 'inline', marginRight: '0.5rem' }} />
-              Verification Pending
-            </h3>
-            <p style={{ color: '#856404', fontSize: '0.9375rem' }}>
-              Your account is pending verification by an administrator. You'll have access to all features once verified.
-            </p>
+            <AlertCircle size={24} color="#856404" style={{ marginTop: '2px' }} />
+            <div>
+              <h3 style={{ fontWeight: '700', color: '#856404', marginBottom: '0.25rem' }}>
+                Verification Pending
+              </h3>
+              <p style={{ color: '#856404', fontSize: '0.9375rem' }}>
+                Your account is currently under review. Access to some features may be limited until an administrator verifies your identity.
+              </p>
+            </div>
           </div>
         )}
 
-        {/* Dashboard Stats */}
+        {/* Stats Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: 'var(--spacing-lg)',
           marginBottom: 'var(--spacing-xl)'
         }}>
-          <div className="card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <p style={{ color: 'var(--gray-500)', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Trust Score</p>
-                <p style={{ fontSize: '1.875rem', fontWeight: '700', color: 'var(--primary-blue)' }}>{profile?.trust_score || 100}</p>
-              </div>
-              <Shield size={32} style={{ color: 'var(--primary-blue)', opacity: 0.2 }} />
+          {/* Trust Score Card */}
+          <div className="card glass-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <p style={{ color: 'var(--gray-500)', fontSize: '0.875rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Your Reputation
+              </p>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--gray-900)', marginTop: '0.5rem' }}>
+                Trust Score
+              </h3>
+              <p style={{ fontSize: '0.875rem', color: 'var(--primary-blue)', marginTop: '0.25rem' }}>
+                Top 5% of students
+              </p>
             </div>
+            <TrustScore score={profile?.trust_score || 100} />
           </div>
 
-          <div className="card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <p style={{ color: 'var(--gray-500)', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Status</p>
-                <p style={{ fontSize: '1.25rem', fontWeight: '600' }}>{getVerificationBadge()}</p>
-              </div>
-              <CheckCircle size={32} style={{ color: 'var(--success-green)', opacity: 0.2 }} />
-            </div>
-          </div>
+          <StatCard 
+            label="Verification Status" 
+            value={
+              <span className={`badge ${
+                profile?.verification_status === 'verified' ? 'badge-success' : 
+                profile?.verification_status === 'rejected' ? 'badge-error' : 'badge-warning'
+              }`} style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}>
+                {profile?.verification_status?.charAt(0).toUpperCase() + profile?.verification_status?.slice(1)}
+              </span>
+            } 
+            icon={Shield} 
+            colorClass="text-green-600"
+          />
 
-          <div className="card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <p style={{ color: 'var(--gray-500)', fontSize: '0.875rem', marginBottom: '0.25rem' }}>Role</p>
-                <p style={{ fontSize: '1.25rem', fontWeight: '600', textTransform: 'capitalize' }}>
-                  {profile?.role || 'Student'}
-                </p>
-              </div>
-              <User size={32} style={{ color: 'var(--secondary-orange)', opacity: 0.2 }} />
-            </div>
-          </div>
+          <StatCard 
+            label="Networking" 
+            value="12 Connections" 
+            icon={Users} 
+            colorClass="text-purple-600"
+            trend="+3"
+          />
         </div>
 
-        {/* Quick Actions */}
-        <div style={{ marginTop: 'var(--spacing-xl)' }}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: 'var(--spacing-md)' }}>
-            Quick Actions
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 'var(--spacing-md)' }}>
-            <Link to="/feed" className="card" style={{ textDecoration: 'none', color: 'inherit', padding: 'var(--spacing-lg)' }}>
-              <Home size={24} style={{ color: 'var(--primary-blue)', marginBottom: 'var(--spacing-sm)' }} />
-              <h4 style={{ fontWeight: '600', marginBottom: 'var(--spacing-xs)' }}>View Feed</h4>
-              <p style={{ color: 'var(--gray-500)', fontSize: '0.875rem' }}>See what's happening in your college</p>
-            </Link>
+        {/* Quick Actions Grid */}
+        <h3 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: 'var(--spacing-lg)', color: 'var(--gray-800)' }}>
+          Quick Actions
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--spacing-lg)' }}>
+          <Link to="/feed" className="card glass-card" style={{ textDecoration: 'none', transition: 'transform 0.2s' }}>
+            <div style={{ 
+              width: '48px', height: '48px', borderRadius: '12px', 
+              backgroundColor: 'rgba(19, 127, 236, 0.1)', display: 'flex', 
+              alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' 
+            }}>
+              <Home size={24} color="var(--primary-blue)" />
+            </div>
+            <h4 style={{ fontSize: '1.125rem', fontWeight: '600', color: 'var(--gray-900)', marginBottom: '0.5rem' }}>
+              View Feed
+            </h4>
+            <p style={{ color: 'var(--gray-500)', fontSize: '0.875rem' }}>
+              Check latest updates from your college network.
+            </p>
+          </Link>
 
-            <Link to="/connections" className="card"style={{ textDecoration: 'none', color: 'inherit', padding: 'var(--spacing-lg)' }}>
-              <Users size={24} style={{ color: 'var(--primary-blue)', marginBottom: 'var(--spacing-sm)' }} />
-              <h4 style={{ fontWeight: '600', marginBottom: 'var(--spacing-xs)' }}>Connect with Peers</h4>
-              <p style={{ color: 'var(--gray-500)', fontSize: '0.875rem' }}>Build your network within the college</p>
-            </Link>
+          <Link to="/connections" className="card glass-card" style={{ textDecoration: 'none', transition: 'transform 0.2s' }}>
+            <div style={{ 
+              width: '48px', height: '48px', borderRadius: '12px', 
+              backgroundColor: 'rgba(255, 152, 0, 0.1)', display: 'flex', 
+              alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' 
+            }}>
+              <Users size={24} color="var(--secondary-orange)" />
+            </div>
+            <h4 style={{ fontSize: '1.125rem', fontWeight: '600', color: 'var(--gray-900)', marginBottom: '0.5rem' }}>
+              Find Mentors
+            </h4>
+            <p style={{ color: 'var(--gray-500)', fontSize: '0.875rem' }}>
+              Connect with alumni and teachers for guidance.
+            </p>
+          </Link>
 
-            <Link to="/bulletins" className="card" style={{ textDecoration: 'none', color: 'inherit', padding: 'var(--spacing-lg)' }}>
-              <Bell size={24} style={{ color: 'var(--primary-blue)', marginBottom: 'var(--spacing-sm)' }} />
-              <h4 style={{ fontWeight: '600', marginBottom: 'var(--spacing-xs)' }}>Official Bulletins</h4>
-              <p style={{ color: 'var(--gray-500)', fontSize: '0.875rem' }}>Stay updated with college announcements</p>
-            </Link>
-          </div>
+          <Link to="/bulletins" className="card glass-card" style={{ textDecoration: 'none', transition: 'transform 0.2s' }}>
+            <div style={{ 
+              width: '48px', height: '48px', borderRadius: '12px', 
+              backgroundColor: 'rgba(40, 167, 69, 0.1)', display: 'flex', 
+              alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' 
+            }}>
+              <Bell size={24} color="var(--success-green)" />
+            </div>
+            <h4 style={{ fontSize: '1.125rem', fontWeight: '600', color: 'var(--gray-900)', marginBottom: '0.5rem' }}>
+              Official Bulletins
+            </h4>
+            <p style={{ color: 'var(--gray-500)', fontSize: '0.875rem' }}>
+              Important notices from university administration.
+            </p>
+          </Link>
         </div>
-      </main>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .sidebar {
-            transform: ${sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'} !important;
-          }
-          .mobile-menu-btn {
-            display: block !important;
-          }
-          .main-content {
-            margin-left: 0 !important;
-            width: 100% !important;
-          }
+        
+        <style>{`
+        .glass-card:hover {
+          transform: translateY(-4px);
+          transition: transform 0.2s ease;
         }
       `}</style>
-    </div>
+    </>
   )
 }
+

@@ -112,7 +112,7 @@ export default function Connections() {
 
   if (profile?.verification_status !== 'verified') {
     return (
-      <div style={{ maxWidth: '800px', marginLeft: '260px', padding: 'var(--spacing-xl)' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <div className="card text-center" style={{ padding: 'var(--spacing-xl)' }}>
           <p style={{ color: 'var(--gray-500)' }}>You need to be verified to view connections.</p>
         </div>
@@ -121,7 +121,7 @@ export default function Connections() {
   }
 
   return (
-    <div style={{ maxWidth: '800px', marginLeft: '260px', padding: 'var(--spacing-xl)' }}>
+    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h2 style={{ fontSize: '1.875rem', fontWeight: '700', marginBottom: 'var(--spacing-lg)' }}>
         Connections
       </h2>

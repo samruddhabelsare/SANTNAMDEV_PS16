@@ -25,7 +25,7 @@ export default function Classrooms() {
   }
 
   return (
-    <div style={{ maxWidth: '800px', marginLeft: '260px', padding: 'var(--spacing-xl)' }}>
+    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h2 style={{ fontSize: '1.875rem', fontWeight: '700', marginBottom: 'var(--spacing-lg)' }}>
         Classrooms
       </h2>

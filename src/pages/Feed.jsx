@@ -75,7 +75,7 @@ export default function Feed() {
   }
 
   return (
-    <div style={{ maxWidth: '800px', marginLeft: '260px', padding: 'var(--spacing-xl)' }}>
+    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ marginBottom: 'var(--spacing-xl)' }}>
         <h2 style={{ fontSize: '1.875rem', fontWeight: '700', marginBottom: 'var(--spacing-md)' }}>
           Feed

@@ -96,7 +96,7 @@ export default function Chat() {
 
   if (profile?.verification_status !== 'verified') {
     return (
-      <div style={{ maxWidth: '800px', marginLeft: '260px', padding: 'var(--spacing-xl)' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <div className="card text-center" style={{ padding: 'var(--spacing-xl)' }}>
           <p style={{ color: 'var(--gray-500)' }}>You need to be verified to access chat.</p>
         </div>
@@ -105,7 +105,7 @@ export default function Chat() {
   }
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 2rem)', marginLeft: '260px' }}>
+    <div className="card" style={{ display: 'flex', height: 'calc(100vh - 100px)', overflow: 'hidden', padding: 0 }}>
       {/* Contacts List */}
       <div style={{
         width: '300px',

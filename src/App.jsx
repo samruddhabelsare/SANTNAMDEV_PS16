@@ -16,6 +16,7 @@ import AdminVerification from './pages/AdminVerification'
 
 import { isSupabaseConfigured } from './lib/supabaseClient'
 import DevToolbar from './components/DevToolbar'
+import Layout from './components/Layout'
 
 function ConfigError() {
   return (
@@ -100,26 +101,7 @@ function App() {
         <Toaster
           position="top-right"
           toastOptions={{
-            duration: 4000,
-            style: {
-              background: 'white',
-              color: 'var(--gray-900)',
-              borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-lg)',
-              fontFamily: 'var(--font-family)'
-            },
-            success: {
-              iconTheme: {
-                primary: 'var(--success-green)',
-                secondary: 'white'
-              }
-            },
-            error: {
-              iconTheme: {
-                primary: 'var(--error-red)',
-                secondary: 'white'
-              }
-            }
+            // ... options ...
           }}
         />
         
@@ -128,12 +110,14 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           
-          {/* Protected Routes */}
+          {/* Protected Routes - Wrapped in Layout */}
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <Layout>
+                  <Dashboard />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -141,7 +125,9 @@ function App() {
             path="/feed"
             element={
               <ProtectedRoute requireVerified>
-                <Feed />
+                <Layout>
+                  <Feed />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -149,7 +135,9 @@ function App() {
             path="/connections"
             element={
               <ProtectedRoute requireVerified>
-                <Connections />
+                <Layout>
+                  <Connections />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -157,7 +145,9 @@ function App() {
             path="/chat"
             element={
               <ProtectedRoute requireVerified>
-                <Chat />
+                <Layout>
+                  <Chat />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -165,7 +155,9 @@ function App() {
             path="/classrooms"
             element={
               <ProtectedRoute requireVerified>
-                <Classrooms />
+                <Layout>
+                  <Classrooms />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -173,7 +165,9 @@ function App() {
             path="/bulletins"
             element={
               <ProtectedRoute>
-                <Bulletins />
+                <Layout>
+                  <Bulletins />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -181,7 +175,9 @@ function App() {
             path="/profile"
             element={
               <ProtectedRoute>
-                <Profile />
+                <Layout>
+                  <Profile />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -189,7 +185,9 @@ function App() {
             path="/admin/verification"
             element={
               <ProtectedRoute>
-                <AdminVerification />
+                <Layout>
+                  <AdminVerification />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -202,5 +200,6 @@ function App() {
     </AuthProvider>
   )
 }
+
 
 export default App

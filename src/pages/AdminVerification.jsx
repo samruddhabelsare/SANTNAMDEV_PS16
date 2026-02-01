@@ -60,7 +60,7 @@ export default function AdminVerification() {
 
   if (profile?.role !== 'admin') {
     return (
-      <div style={{ maxWidth: '800px', marginLeft: '260px', padding: 'var(--spacing-xl)' }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <div className="card text-center" style={{ padding: 'var(--spacing-xl)' }}>
           <p style={{ color: 'var(--gray-500)' }}>Access denied. Admin only.</p>
         </div>
@@ -69,7 +69,7 @@ export default function AdminVerification() {
   }
 
   return (
-    <div style={{ maxWidth: '800px', marginLeft: '260px', padding: 'var(--spacing-xl)' }}>
+    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h2 style={{ fontSize: '1.875rem', fontWeight: '700', marginBottom: 'var(--spacing-lg)' }}>
         User Verification
       </h2>
