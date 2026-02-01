@@ -57,8 +57,8 @@ export default function Classrooms() {
                     {classroom.name || 'Classroom'}
                   </h3>
                   <div style={{ display: 'flex', gap: 'var(--spacing-md)', fontSize: '0.875rem', color: 'var(--gray-500)' }}>
-                    <span className="badge badge-info">
-                      {classroom.is_official ? 'Official' : 'Unofficial'}
+                    <span className={`badge ${classroom.type === 'official' ? 'badge-primary' : 'badge-info'}`}>
+                      {classroom.type === 'official' ? 'Official' : 'Unofficial'}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                       <Users size={14} />
