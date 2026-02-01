@@ -20,9 +20,14 @@ export default function Connections() {
 
   const fetchConnections = async () => {
     if (localStorage.getItem('mockMode') === 'true') {
-      setConnections([
-        { id: 'mock-conn-1', sender_id: 'mock-user-1', receiver_id: user.id, status: 'accepted' }
-      ])
+      const { mockStore } = await import('../lib/mockStore')
+      // Map mock data to match Supabase structure if needed, or update mockStore to match
+      const mocks = mockStore.getConnections().map(c => ({
+        ...c,
+        sender_id: c.sender_id === 'current-user' ? user.id : c.sender_id, // Fix ID for display
+        receiver_id: c.receiver_id === 'current-user' ? user.id : c.receiver_id
+      }))
+      setConnections(mocks)
       return
     }
     try {
@@ -41,10 +46,8 @@ export default function Connections() {
 
   const fetchPendingRequests = async () => {
     if (localStorage.getItem('mockMode') === 'true') {
-      setPendingRequests([
-        { id: 'mock-req-1', sender_id: 'Project Partner', receiver_id: user.id, status: 'pending' },
-        { id: 'mock-req-2', sender_id: 'Alumni Mentor', receiver_id: user.id, status: 'pending' }
-      ])
+      const { mockStore } = await import('../lib/mockStore')
+      setPendingRequests(mockStore.getRequests())
       return
     }
     try {
@@ -63,11 +66,8 @@ export default function Connections() {
 
   const fetchUsers = async () => {
     if (localStorage.getItem('mockMode') === 'true') {
-      setUsers([
-        { id: 'mock-u-1', email: 'alice@example.com', role: 'student', verification_status: 'verified' },
-        { id: 'mock-u-2', email: 'bob@example.com', role: 'teacher', verification_status: 'verified' },
-        { id: 'mock-u-3', email: 'charlie@example.com', role: 'alumni', verification_status: 'verified' }
-      ])
+      const { mockStore } = await import('../lib/mockStore')
+      setUsers(mockStore.getUsers())
       return
     }
     try {
@@ -85,6 +85,11 @@ export default function Connections() {
   }
 
   const sendRequest = async (receiverId) => {
+    if (localStorage.getItem('mockMode') === 'true') {
+      toast.success('Connection request sent (Mock)!')
+      // In a full implementation we'd add it to a "Sent" list in mockStore
+      return
+    }
     try {
       const { error } = await supabase.from('connections').insert({
         sender_id: user.id,
@@ -101,6 +106,14 @@ export default function Connections() {
   }
 
   const acceptRequest = async (requestId) => {
+    if (localStorage.getItem('mockMode') === 'true') {
+      const { mockStore } = await import('../lib/mockStore')
+      mockStore.acceptRequest(requestId)
+      toast.success('Request accepted (Mock)!')
+      fetchConnections()
+      fetchPendingRequests()
+      return
+    }
     try {
       const { error } = await supabase
         .from('connections')
@@ -117,6 +130,11 @@ export default function Connections() {
   }
 
   const rejectRequest = async (requestId) => {
+    if (localStorage.getItem('mockMode') === 'true') {
+      toast.success('Request rejected (Mock)')
+      // In full impl, remove from store
+      return
+    }
     try {
       const { error } = await supabase
         .from('connections')

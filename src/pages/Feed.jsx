@@ -15,32 +15,13 @@ export default function Feed() {
     fetchPosts()
   }, [])
 
+  // Import mockStore (dynamic import or moved to top if desired, but here we assume globally available or imported)
+  // For simplicity in this replace block, we'll assume we add the import at the top in a separate step or just use the logic inline if we imported it.
+  
   const fetchPosts = async () => {
-    // Check for mock mode
     if (localStorage.getItem('mockMode') === 'true') {
-      setPosts([
-        {
-          id: 'mock-1',
-          content: 'Just finished the new react module! 🚀 #learning #react',
-          created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-          media_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&auto=format&fit=crop&q=60',
-          profiles: { email: 'student@iiit.ac.in', role: 'student', verification_status: 'verified' }
-        },
-        {
-          id: 'mock-2',
-          content: 'Does anyone have the notes for CS201?',
-          created_at: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-          media_url: null,
-          profiles: { email: 'peer@iiit.ac.in', role: 'student', verification_status: 'verified' }
-        },
-        {
-          id: 'mock-3',
-          content: 'Campus hackathon starting next week! Register now.',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-          media_url: 'https://images.unsplash.com/photo-1504384308090-c54be3852f33?w=800&auto=format&fit=crop&q=60',
-          profiles: { email: 'admin@iiit.ac.in', role: 'admin', verification_status: 'verified' }
-        }
-      ])
+      const { mockStore } = await import('../lib/mockStore')
+      setPosts(mockStore.getPosts())
       return
     }
 
@@ -70,6 +51,23 @@ export default function Feed() {
     }
 
     setLoading(true)
+
+    if (localStorage.getItem('mockMode') === 'true') {
+      const { mockStore } = await import('../lib/mockStore')
+      mockStore.addPost({
+        content: content.trim(),
+        media_url: mediaUrl.trim() || null,
+        profiles: { email: user.email, role: profile.role, verification_status: 'verified' },
+        user_id: user.id
+      })
+      toast.success('Post created (Mock)!')
+      setContent('')
+      setMediaUrl('')
+      fetchPosts() // Reload from store
+      setLoading(false)
+      return
+    }
+
     try {
       const { error } = await supabase.from('posts').insert({
         user_id: user.id,
