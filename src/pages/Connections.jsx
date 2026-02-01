@@ -19,6 +19,12 @@ export default function Connections() {
   }, [profile])
 
   const fetchConnections = async () => {
+    if (localStorage.getItem('mockMode') === 'true') {
+      setConnections([
+        { id: 'mock-conn-1', sender_id: 'mock-user-1', receiver_id: user.id, status: 'accepted' }
+      ])
+      return
+    }
     try {
       const { data, error } = await supabase
         .from('connections')
@@ -34,6 +40,13 @@ export default function Connections() {
   }
 
   const fetchPendingRequests = async () => {
+    if (localStorage.getItem('mockMode') === 'true') {
+      setPendingRequests([
+        { id: 'mock-req-1', sender_id: 'Project Partner', receiver_id: user.id, status: 'pending' },
+        { id: 'mock-req-2', sender_id: 'Alumni Mentor', receiver_id: user.id, status: 'pending' }
+      ])
+      return
+    }
     try {
       const { data, error } = await supabase
         .from('connections')
@@ -49,6 +62,14 @@ export default function Connections() {
   }
 
   const fetchUsers = async () => {
+    if (localStorage.getItem('mockMode') === 'true') {
+      setUsers([
+        { id: 'mock-u-1', email: 'alice@example.com', role: 'student', verification_status: 'verified' },
+        { id: 'mock-u-2', email: 'bob@example.com', role: 'teacher', verification_status: 'verified' },
+        { id: 'mock-u-3', email: 'charlie@example.com', role: 'alumni', verification_status: 'verified' }
+      ])
+      return
+    }
     try {
       const { data, error } = await supabase
         .from('profiles')

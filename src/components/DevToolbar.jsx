@@ -21,6 +21,27 @@ export default function DevToolbar() {
     { path: '/admin/verification', icon: Shield, label: 'Admin' },
   ]
 
+  const toggleMockMode = () => {
+    const isMock = localStorage.getItem('mockMode') === 'true'
+    localStorage.setItem('mockMode', !isMock)
+    window.dispatchEvent(new Event('mockModeChanged'))
+    // Force reload to apply mock mode changes cleanly
+    window.location.reload()
+  }
+
+  const triggerNotification = async () => {
+    const { supabase } = await import('../lib/supabaseClient')
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    await supabase.from('notifications').insert({
+      user_id: user.id,
+      title: 'Test Notification',
+      message: 'This is a test notification triggered from DevToolbar at ' + new Date().toLocaleTimeString(),
+      type: 'info'
+    })
+  }
+
   return (
     <div style={{
       position: 'fixed',
@@ -41,6 +62,29 @@ export default function DevToolbar() {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderRight: '1px solid #374151', paddingRight: '12px' }}>
         <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#ff9800', whiteSpace: 'nowrap' }}>DEV MODE</span>
+        
+        <button 
+          onClick={toggleMockMode}
+          style={{ 
+            background: localStorage.getItem('mockMode') === 'true' ? '#10b981' : '#4b5563', 
+            color: 'white', border: 'none', borderRadius: '4px', 
+            padding: '4px 8px', fontSize: '0.75rem', cursor: 'pointer', whiteSpace: 'nowrap' 
+          }}
+        >
+          {localStorage.getItem('mockMode') === 'true' ? 'Mock ON' : 'Mock OFF'}
+        </button>
+
+        <button 
+          onClick={triggerNotification}
+          title="Trigger Test Notification"
+          style={{ 
+            background: 'transparent', border: '1px solid #4b5563', color: '#e5e7eb', borderRadius: '4px', 
+            padding: '4px 8px', fontSize: '0.75rem', cursor: 'pointer', whiteSpace: 'nowrap' 
+          }}
+        >
+          🔔 Test
+        </button>
+
         {!user ? (
           <button 
             onClick={() => {

@@ -37,6 +37,12 @@ export default function Profile() {
               <span className="badge badge-primary">
                 {profile?.role?.charAt(0).toUpperCase() + profile?.role?.slice(1)}
               </span>
+              <span className="badge badge-info flex items-center gap-1">
+                 IIIT Nagpur
+              </span>
+              <span className="badge badge-secondary" style={{ backgroundColor: '#7c3aed', color: 'white' }}>
+                 Dev Team
+              </span>
               {profile?.verification_status === 'verified' && (
                 <span className="badge badge-success">
                   <CheckCircle size={12} /> Verified

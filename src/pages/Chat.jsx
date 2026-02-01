@@ -25,6 +25,13 @@ export default function Chat() {
   }, [selectedContact])
 
   const fetchConnections = async () => {
+    if (localStorage.getItem('mockMode') === 'true') {
+      setConnections([
+        { id: 'mock-conn-1', sender_id: 'Sarah (Project Lead)', receiver_id: user.id, status: 'accepted' },
+        { id: 'mock-conn-2', sender_id: 'Dr. Smith (Professor)', receiver_id: user.id, status: 'accepted' }
+      ])
+      return
+    }
     try {
       const { data, error } = await supabase
         .from('connections')
@@ -40,6 +47,14 @@ export default function Chat() {
   }
 
   const fetchMessages = async () => {
+    if (localStorage.getItem('mockMode') === 'true') {
+      setMessages([
+        { sender_id: selectedContact, receiver_id: user.id, message: 'Hey! How is the project coming along?' },
+        { sender_id: user.id, receiver_id: selectedContact, message: 'Going great! Just finishing up the UI.' },
+        { sender_id: selectedContact, receiver_id: user.id, message: 'Awesome, let me know if you need help.' }
+      ])
+      return
+    }
     try {
       const { data, error } = await supabase
         .from('messages')

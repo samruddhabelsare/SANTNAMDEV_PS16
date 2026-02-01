@@ -16,6 +16,34 @@ export default function Feed() {
   }, [])
 
   const fetchPosts = async () => {
+    // Check for mock mode
+    if (localStorage.getItem('mockMode') === 'true') {
+      setPosts([
+        {
+          id: 'mock-1',
+          content: 'Just finished the new react module! 🚀 #learning #react',
+          created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+          media_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&auto=format&fit=crop&q=60',
+          profiles: { email: 'student@iiit.ac.in', role: 'student', verification_status: 'verified' }
+        },
+        {
+          id: 'mock-2',
+          content: 'Does anyone have the notes for CS201?',
+          created_at: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
+          media_url: null,
+          profiles: { email: 'peer@iiit.ac.in', role: 'student', verification_status: 'verified' }
+        },
+        {
+          id: 'mock-3',
+          content: 'Campus hackathon starting next week! Register now.',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+          media_url: 'https://images.unsplash.com/photo-1504384308090-c54be3852f33?w=800&auto=format&fit=crop&q=60',
+          profiles: { email: 'admin@iiit.ac.in', role: 'admin', verification_status: 'verified' }
+        }
+      ])
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('posts')

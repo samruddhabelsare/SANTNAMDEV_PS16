@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import StatCard from '../components/StatCard'
 import TrustScore from '../components/TrustScore'
+import NotificationsDropdown from '../components/NotificationsDropdown'
 
 export default function Dashboard() {
   const { user, profile } = useAuth()
@@ -61,43 +62,7 @@ export default function Dashboard() {
             </p>
           </div>
           
-          <div className="glass-card" style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '1rem', 
-            padding: '0.5rem 1rem',
-            borderRadius: '9999px'
-          }}>
-            <div style={{ position: 'relative' }}>
-              <Bell size={20} color="var(--gray-500)" />
-              <span style={{ 
-                position: 'absolute', 
-                top: -2, 
-                right: -2, 
-                width: '8px', 
-                height: '8px', 
-                backgroundColor: 'var(--error-red)', 
-                borderRadius: '50%' 
-              }} />
-            </div>
-            <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--gray-200)' }} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                backgroundColor: 'var(--primary-blue)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontWeight: '600',
-                fontSize: '0.875rem'
-              }}>
-                {user?.email?.[0]?.toUpperCase()}
-              </div>
-            </div>
-          </div>
+          <NotificationsDropdown />
         </div>
 
         {/* Verification Alert */}
