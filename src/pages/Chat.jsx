@@ -48,11 +48,14 @@ export default function Chat() {
 
   const fetchMessages = async () => {
     if (localStorage.getItem('mockMode') === 'true') {
-      setMessages([
-        { sender_id: selectedContact, receiver_id: user.id, message: 'Hey! How is the project coming along?' },
-        { sender_id: user.id, receiver_id: selectedContact, message: 'Going great! Just finishing up the UI.' },
-        { sender_id: selectedContact, receiver_id: user.id, message: 'Awesome, let me know if you need help.' }
-      ])
+      const { mockStore } = await import('../lib/mockStore')
+      const allMessages = mockStore.getMessages()
+      // Filter messages for selected contact
+      const filtered = allMessages.filter(m => 
+        (m.sender_id === selectedContact && m.receiver_id === user.id) ||
+        (m.sender_id === user.id && m.receiver_id === selectedContact)
+      )
+      setMessages(filtered)
       return
     }
     try {
@@ -94,6 +97,19 @@ export default function Chat() {
   const sendMessage = async (e) => {
     e.preventDefault()
     if (!newMessage.trim() || !selectedContact) return
+
+    if (localStorage.getItem('mockMode') === 'true') {
+      const { mockStore } = await import('../lib/mockStore')
+      mockStore.addMessage({
+        sender_id: user.id,
+        receiver_id: selectedContact,
+        message: newMessage.trim(),
+        created_at: new Date().toISOString()
+      })
+      setNewMessage('')
+      fetchMessages() // Refresh list
+      return
+    }
 
     try {
       const { error } = await supabase.from('messages').insert({

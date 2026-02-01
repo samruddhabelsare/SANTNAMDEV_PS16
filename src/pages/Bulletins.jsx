@@ -16,6 +16,14 @@ export default function Bulletins() {
   }, [])
 
   const fetchBulletins = async () => {
+    if (localStorage.getItem('mockMode') === 'true') {
+      const { mockStore } = await import('../lib/mockStore')
+      const all = mockStore.getBulletins()
+      // Optional: Filter by level if needed, but for prototype we can return all or filter
+      setBulletins(all.filter(b => b.level === level))
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('bulletin_posts')

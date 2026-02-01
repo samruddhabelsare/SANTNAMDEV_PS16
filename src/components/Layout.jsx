@@ -11,15 +11,7 @@ export default function Layout({ children }) {
 
       {/* Main Content */}
       <main 
-        className="main-content"
-        style={{
-          marginLeft: '260px',
-          flex: 1,
-          padding: 'var(--spacing-xl)',
-          width: 'calc(100% - 260px)',
-          transition: 'margin-left 0.3s ease',
-          minHeight: '100vh'
-        }}
+        className="main-area"
       >
         {/* Mobile Menu Button */}
         <button
@@ -31,7 +23,7 @@ export default function Layout({ children }) {
             right: '1rem',
             zIndex: 40,
             padding: '8px',
-            display: 'none' // Hidden by default, shown via media query
+            display: 'block' // Controlled by CSS
           }}
         >
           <Menu size={24} color="var(--primary-blue)" />
@@ -41,14 +33,32 @@ export default function Layout({ children }) {
       </main>
 
       <style>{`
+        .main-area {
+          margin-left: 260px;
+          flex: 1;
+          padding: var(--spacing-xl);
+          width: calc(100% - 260px);
+          transition: margin-left 0.3s ease;
+          min-height: 100vh;
+        }
+
+        /* Mobile styles */
         @media (max-width: 768px) {
-          .main-content {
+          .main-area {
             margin-left: 0 !important;
             width: 100% !important;
             padding: 1rem !important;
           }
+          /* Hide button on desktop, show on mobile */
           button.md\\:hidden {
             display: block !important;
+          }
+        }
+
+        /* Desktop specific */
+        @media (min-width: 769px) {
+          button.md\\:hidden {
+            display: none !important;
           }
         }
       `}</style>

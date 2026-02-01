@@ -123,17 +123,72 @@ export default function Feed() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">
-                  <ImageIcon size={16} style={{ display: 'inline', marginRight: '0.25rem' }} />
-                  Media URL (optional)
+                <label className="form-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>
+                    <ImageIcon size={16} style={{ display: 'inline', marginRight: '0.25rem' }} />
+                    Add Image (Optional)
+                  </span>
+                  {mediaUrl && (
+                    <button 
+                      type="button" 
+                      onClick={() => setMediaUrl('')}
+                      style={{ fontSize: '0.75rem', color: 'var(--error-red)', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      Remove
+                    </button>
+                  )}
                 </label>
-                <input
-                  type="url"
-                  className="form-input"
-                  placeholder="https://example.com/image.jpg"
-                  value={mediaUrl}
-                  onChange={(e) => setMediaUrl(e.target.value)}
-                />
+                
+                {!mediaUrl ? (
+                  <div 
+                    onClick={() => document.getElementById('image-upload').click()}
+                    style={{
+                      border: '2px dashed var(--gray-300)',
+                      borderRadius: 'var(--radius-md)',
+                      padding: '1rem',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      color: 'var(--gray-500)',
+                      transition: 'all 0.2s',
+                      backgroundColor: 'var(--gray-50)'
+                    }}
+                  >
+                    <input
+                      id="image-upload"
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const file = e.target.files[0]
+                        if (file) {
+                          if (file.size > 2000000) { // 2MB limit
+                             toast.error('Image too large (max 2MB)')
+                             return
+                          }
+                          const reader = new FileReader()
+                          reader.onloadend = () => {
+                            setMediaUrl(reader.result)
+                          }
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                    />
+                    <p style={{ fontSize: '0.875rem' }}>Click to upload image</p>
+                  </div>
+                ) : (
+                  <div style={{ position: 'relative', marginTop: '0.5rem' }}>
+                    <img 
+                      src={mediaUrl} 
+                      alt="Preview" 
+                      style={{ 
+                        width: '100%', 
+                        maxHeight: '200px', 
+                        objectFit: 'cover', 
+                        borderRadius: 'var(--radius-md)' 
+                      }} 
+                    />
+                  </div>
+                )}
               </div>
 
               <button type="submit" className="btn btn-primary" disabled={loading}>

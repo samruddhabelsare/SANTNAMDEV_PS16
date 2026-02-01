@@ -19,7 +19,12 @@ export const AuthProvider = ({ children }) => {
       return
     }
 
-    // Check active session
+    // Check active session or mock mode
+    if (localStorage.getItem('mockMode') === 'true') {
+      loginAsDev()
+      return
+    }
+
     supabase.auth.getSession().then(({ data, error }) => {
       if (error) {
         console.error('Error checking session:', error)
@@ -40,11 +45,8 @@ export const AuthProvider = ({ children }) => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth State Change:', _event, session?.user?.id)
-      
       // CRITICAL: If we are in dev mode, IGNORE Supabase updates completely
-      if (isDevMode.current) {
-        console.log('AuthContext: Ignoring Supabase update due to Dev Mode')
+      if (isDevMode.current || localStorage.getItem('mockMode') === 'true') {
         return
       }
 
@@ -173,34 +175,55 @@ export const AuthProvider = ({ children }) => {
 
   const loginAsDev = () => {
     isDevMode.current = true
+    const mockRole = localStorage.getItem('mockRole') || 'student'
     
     const devUser = {
       id: 'dev-user-id',
-      email: 'dev@yuvasetu.edu.in',
-      role: 'student'
+      email: `dev-${mockRole}@yuvasetu.edu.in`,
+      role: mockRole
     }
     const devProfile = {
       id: 'dev-user-id',
-      email: 'dev@yuvasetu.edu.in',
+      email: `dev-${mockRole}@yuvasetu.edu.in`,
       verification_status: 'verified',
-      role: 'student',
+      role: mockRole,
       trust_score: 100
     }
     
     setUser(devUser)
     setProfile(devProfile)
     setLoading(false)
-    toast.success('Bypassed Auth: Logged in as Dev User')
+     // No toast needed on auto-login
   }
 
   const value = {
     user,
     profile,
     loading,
-    signUp,
-    signIn,
+    signUp: async (e, p, r) => {
+       if (localStorage.getItem('mockMode') === 'true') {
+         toast.success('Mock Account Created')
+         return { data: { user: { id: 'mock-new' } }, error: null }
+       }
+       return signUp(e, p, r) // Call original if needed, but here we just need to return connection to it
+    },
+    signIn: async (e, p) => {
+       if (localStorage.getItem('mockMode') === 'true') {
+         loginAsDev()
+         return { data: { user: { id: 'dev-user-id' } }, error: null }
+       }
+       return signIn(e, p)
+    },
     signInWithGoogle,
-    signOut,
+    signOut: async () => {
+      if (localStorage.getItem('mockMode') === 'true') {
+        toast.success('Signed out (Mock)')
+        setUser(null)
+        setProfile(null)
+        return
+      }
+      return signOut()
+    },
     loginAsDev,
     refetchProfile: () => user && fetchProfile(user.id)
   }

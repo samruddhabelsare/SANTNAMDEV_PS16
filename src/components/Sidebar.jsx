@@ -37,36 +37,12 @@ export default function Sidebar({ isOpen, onClose }) {
     <>
       {/* Mobile Overlay */}
       <div 
-        className={`fixed inset-0 bg-black/50 z-20 md:hidden ${isOpen ? 'block' : 'hidden'}`}
+        className={`mobile-overlay ${isOpen ? 'open' : ''}`}
         onClick={onClose}
       />
 
       {/* Sidebar Container */}
-      <aside 
-        className={`
-          fixed top-0 left-0 h-full w-[260px] bg-white border-r border-[#e5e7eb] z-30
-          transform transition-transform duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-          md:translate-x-0
-        `}
-        style={{
-          width: '260px',
-          height: '100vh',
-          backgroundColor: 'white',
-          borderRight: '1px solid var(--gray-200)',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          zIndex: 50,
-          display: 'flex',
-          flexDirection: 'column',
-          transition: 'transform 0.3s ease',
-          transform: window.innerWidth < 768 && !isOpen ? 'translateX(-100%)' : 'none' 
-          // Note: Logic above is a bit mixed between CSS classes and inline. 
-          // We will stick to inline styles for consistency with previous file patterns, 
-          // but reuse the logic from Dashboard.jsx
-        }}
-      >
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div style={{ padding: 'var(--spacing-xl)', borderBottom: '1px solid var(--gray-100)' }}>
           <h1 className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.5px' }}>
             YuvaSetu
@@ -104,6 +80,50 @@ export default function Sidebar({ isOpen, onClose }) {
           </button>
         </div>
       </aside>
+
+      <style>{`
+        .sidebar {
+          width: 260px;
+          height: 100vh;
+          background-color: white;
+          border-right: 1px solid var(--gray-200);
+          position: fixed;
+          top: 0;
+          left: 0;
+          z-index: 50;
+          display: flex;
+          flex-direction: column;
+          transition: transform 0.3s ease;
+          /* Default desktop: always visible (transform none) */
+          transform: none; 
+        }
+
+        .mobile-overlay {
+          position: fixed;
+          inset: 0;
+          background-color: rgba(0,0,0,0.5);
+          z-index: 40;
+          display: none;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+          .sidebar {
+            /* Mobile default: hidden off-screen */
+            transform: translateX(-100%);
+          }
+          .sidebar.open {
+            /* Mobile open: visible */
+            transform: translateX(0);
+          }
+          
+          .mobile-overlay.open {
+            display: block;
+            opacity: 1;
+          }
+        }
+      `}</style>
     </>
   )
 }

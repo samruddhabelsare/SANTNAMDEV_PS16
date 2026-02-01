@@ -90,6 +90,14 @@ VITE_SUPABASE_ANON_KEY=your_anon_key
 }
 
 function App() {
+  React.useEffect(() => {
+    // Auto-enable mock mode for better prototyping experience if not set
+    if (localStorage.getItem('mockMode') === null) {
+      localStorage.setItem('mockMode', 'true')
+      window.dispatchEvent(new Event('mockModeChanged'))
+    }
+  }, [])
+
   if (!isSupabaseConfigured()) {
     return <ConfigError />
   }

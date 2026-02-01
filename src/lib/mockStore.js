@@ -33,6 +33,74 @@ export const mockStore = {
     { id: 'mock-u-3', email: 'charlie@alum.com', role: 'alumni', verification_status: 'verified' }
   ],
 
+  initialBulletins: [
+    {
+      id: "mock-b-1",
+      title: "Semester End Examinations Schedule",
+      content: "The final schedule for Spring 2026 examinations has been released. Please check the college website.",
+      level: "college",
+      created_at: new Date().toISOString(),
+      profiles: { email: "registrar@iiit.ac.in", role: "admin" }
+    },
+    {
+      id: "mock-b-2",
+      title: "CSE Department Meeting",
+      content: "All 3rd year CSE students are requested to attend the briefing on Major Projects.",
+      level: "department",
+      created_at: new Date(Date.now() - 86400000).toISOString(),
+      profiles: { email: "hod.cse@iiit.ac.in", role: "teacher" }
+    },
+    {
+      id: "mock-b-3",
+      title: "CS201 Class Canceled",
+      content: "Today's DSA class is rescheduled to Saturday 10 AM.",
+      level: "class",
+      created_at: new Date(Date.now() - 3600000).toISOString(),
+      profiles: { email: "prof.dsa@iiit.ac.in", role: "teacher" }
+    }
+  ],
+
+  initialClassrooms: [
+    { 
+      id: "mock-c-1", 
+      name: "Computer Science 2026", 
+      subject: "B.Tech CSE", 
+      type: "official",
+      teacher_id: "mock-t-1",
+      section: "A",
+      member_count: 120
+    },
+    { 
+      id: "mock-c-2", 
+      name: "Data Structures & Algo", 
+      subject: "CS201", 
+      type: "official",
+      teacher_id: "mock-t-2",
+      section: "Core",
+      member_count: 65
+    },
+    { 
+      id: "mock-c-3", 
+      name: "Competitive Coding Club", 
+      subject: "Extra Curricular", 
+      type: "unofficial",
+      teacher_id: "mock-s-1",
+      section: "Club",
+      member_count: 240
+    }
+  ],
+
+  initialPendingUsers: [
+    { id: 'mock-p-1', email: 'junior@iiit.ac.in', role: 'student', verification_status: 'pending' },
+    { id: 'mock-p-2', email: 'guest.lecturer@iiit.ac.in', role: 'teacher', verification_status: 'pending' }
+  ],
+  
+  initialMessages: [
+    { sender_id: 'Sarah (Project Lead)', receiver_id: 'mock-u-1', message: 'Hey! How is the project coming along?' },
+    { sender_id: 'mock-u-1', receiver_id: 'Sarah (Project Lead)', message: 'Going great! Just finishing up the UI.' },
+    { sender_id: 'Sarah (Project Lead)', receiver_id: 'mock-u-1', message: 'Awesome, let me know if you need help.' }
+  ],
+
   // Methods
   getPosts: () => {
     const stored = localStorage.getItem('mock_posts')
@@ -41,6 +109,14 @@ export const mockStore = {
       return mockStore.initialPosts
     }
     return JSON.parse(stored)
+  },
+
+  getBulletins: () => {
+    return mockStore.initialBulletins
+  },
+
+  getClassrooms: () => {
+    return mockStore.initialClassrooms
   },
 
   addPost: (post) => {
@@ -84,13 +160,48 @@ export const mockStore = {
   },
 
   sendRequest: (userId) => {
-    // This is simplified, usually we'd check if request exists
-    const requests = mockStore.getRequests() // In real app, this would modify 'sent' requests
-    // For demo, we'll just toast success in the UI coponent
     return true
   },
 
   getUsers: () => {
     return mockStore.initialUsers
+  },
+
+  // Admin & Chat Features
+  getPendingUsers: () => {
+    const stored = localStorage.getItem('mock_pending_users')
+    if (!stored) {
+      localStorage.setItem('mock_pending_users', JSON.stringify(mockStore.initialPendingUsers))
+      return mockStore.initialPendingUsers
+    }
+    return JSON.parse(stored)
+  },
+
+  verifyUser: (userId) => {
+    const users = mockStore.getPendingUsers()
+    const updated = users.filter(u => u.id !== userId)
+    localStorage.setItem('mock_pending_users', JSON.stringify(updated))
+    return updated
+  },
+
+  rejectUser: (userId) => {
+     // Same logic as verify for now, remove from list
+    return mockStore.verifyUser(userId)
+  },
+
+  getMessages: () => {
+    const stored = localStorage.getItem('mock_messages')
+    if (!stored) {
+      localStorage.setItem('mock_messages', JSON.stringify(mockStore.initialMessages))
+      return mockStore.initialMessages
+    }
+    return JSON.parse(stored)
+  },
+
+  addMessage: (msg) => {
+    const messages = mockStore.getMessages()
+    const updated = [...messages, msg]
+    localStorage.setItem('mock_messages', JSON.stringify(updated))
+    return updated
   }
 }

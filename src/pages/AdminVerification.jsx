@@ -15,6 +15,12 @@ export default function AdminVerification() {
   }, [profile])
 
   const fetchPendingUsers = async () => {
+    if (localStorage.getItem('mockMode') === 'true') {
+      const { mockStore } = await import('../lib/mockStore')
+      setPendingUsers(mockStore.getPendingUsers())
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -29,6 +35,14 @@ export default function AdminVerification() {
   }
 
   const verifyUser = async (userId) => {
+    if (localStorage.getItem('mockMode') === 'true') {
+       const { mockStore } = await import('../lib/mockStore')
+       mockStore.verifyUser(userId)
+       toast.success('User verified (Mock)!')
+       fetchPendingUsers()
+       return
+    }
+
     try {
       const { error } = await supabase
         .from('profiles')
@@ -44,6 +58,14 @@ export default function AdminVerification() {
   }
 
   const rejectUser = async (userId) => {
+    if (localStorage.getItem('mockMode') === 'true') {
+       const { mockStore } = await import('../lib/mockStore')
+       mockStore.rejectUser(userId)
+       toast.success('User rejected (Mock)')
+       fetchPendingUsers()
+       return
+    }
+
     try {
       const { error } = await supabase
         .from('profiles')

@@ -12,6 +12,12 @@ export default function Classrooms() {
   }, [])
 
   const fetchClassrooms = async () => {
+    if (localStorage.getItem('mockMode') === 'true') {
+      const { mockStore } = await import('../lib/mockStore')
+      setClassrooms(mockStore.getClassrooms())
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('classrooms')
